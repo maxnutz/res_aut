@@ -379,7 +379,6 @@ def Nulldurchgang_per_month(jahr, res, months):
     datum = jahr+'/'+'01'+'/01 00:00:00'
     counts=[]
     for i in range(2,14):
-        print('ist bei Monat  ', i, '\n')
         month_begin = datetime.strptime(datum, '%Y/%m/%d %H:%M:%S')
         if i == 13:
             datum = jahr+'/'+str(12)+'/31 23:00:00'
@@ -775,7 +774,7 @@ def plot_Schaltsignale(name, signaldf, signal):
         plt.close()
         
 run = config.get('evaluation')
-#basic_data()
+basic_data()
 
 if run.get('residual_load_ordered') == True:
 	Residuallast_per_hour(jahr, res)
