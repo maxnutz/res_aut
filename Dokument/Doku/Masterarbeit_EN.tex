@@ -1,0 +1,157 @@
+% !TEX encoding = IsoLatin2
+\documentclass[Master, MBE, english]{twbook}
+\usepackage[T1]{fontenc}
+% Hier kann je nach Betriebssystem eine der folgenden Optionen notwendig sein, um die Umlaute korrekt wiederzugeben:
+% utf8, latin, applemac
+\usepackage[ansinew]{inputenc}
+% Die nachfolgenden 2 Pakete stellen sonst nicht benötigte Features zur Verfügung
+\usepackage{blindtext,dtklogos}
+
+\title{Title of paper\\Title of paper}
+\author{Degree First Name Surname, Degree}
+\studentnumber{XXXXXXXXXXXXXXX}
+\supervisor{Degree First Name Surname, Degree}
+\secondsupervisor{Degree First Name Surname, Degree}
+\place{Place}
+\kurzfassung{\blindtext}
+\schlagworte{Schlagwort1, Schlagwort2, Schlagwort3, Schlagwort4}
+\outline{\blindtext}
+\keywords{Keyword1, Keyword2, Keyword3, Keyword4}
+\acknowledgements{\blindtext}
+
+\begin{document}
+\maketitle
+
+\Blinddocument
+
+\chapter{Erste Überschrift der Ebene 1(chapter)}
+\blinddocument
+
+\blindmathpaper
+
+\section{Erste Überschrift Tiefe 2}(section)
+\blindtext 
+
+\subsection{Erste Überschrift Tiefe 3 (subsection)}
+\blindtext 
+
+\subsubsection{Erste Überschrift Tiefe 4 (subsubsection)}
+\blindtext
+
+\chapter{Zweite Überschrift der Tiefe 1 (chapter)}
+\blindtext  
+
+\section{Zweite Überschrift Tiefe 2 (section)}
+\blindtext  
+
+\section{Zweite Überschrift Tiefe 2 (section)}
+\blindtext 
+
+\subsection{Zweite Überschrift Tiefe 3 (subsection)}
+\blindtext 
+
+\subsection{Dritte Überschrift Tiefe 3 (subsection)}
+\blindtext 
+ 
+\chapter{Zweite Überschrift Tiefe 0 (chapter)}
+\blindtext 
+
+\noindent Querverweise werden in \LaTeX{} automatisch erzeugt und verwaltet, damit sie leicht aktualisiert werden können. Hier wird zum Beispiel auf Abbildung \ref{Abb1} verwiesen.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=0.5\linewidth]{PICs/Buchruecken}
+\caption{Beispiel für die Beschriftung eines Buchrückens.}\label{Abb1}
+\end{figure}
+
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=0.5\linewidth]{PICs/Buchruecken}
+\caption{Beispiel für die Beschriftung eines Buchrückens.}\label{Abb3}
+\end{figure}
+
+
+Und hier ist ein Verweis auf Tabelle \ref{tab1}. Das gezeigte Tabellenformat ist nur ein Beispiel. Tabellen können individuell gestaltet werden.
+
+\begin{table}[!htbp]
+\centering
+\begin{tabular}{| p{0.3\linewidth} | p{0.3\linewidth} | p{0.3\linewidth} |}\hline
+Datum & Thema & Raum\\\hline
+20.08.2008 & Graphentheorie	& HS 3.13\\
+01.10.2008 & Biomathematik & HS 1.05\\\hline
+\end{tabular}
+\caption{Semesterplan der Lehrveranstaltung \glqq Angewandte Mathematik\grqq.}\label{tab1}
+\end{table}
+
+Hier wird auf die Formel \ref{Gl1} verwiesen.
+
+\begin{align}
+x = -\frac{p}{2}\pm\sqrt{\frac{p^2}{4}-q}\label{Gl1}
+\end{align}
+
+Literaturverweise sollten automatisch verwaltet werden, vor allem dann, wenn es viele Quellenverweise gibt. Hier wird auf \cite{Balzert:2005} und \cite{Wagner:2007,Aloyetal:1995} verwiesen. Das verwendete Zitierformat (bzw. das Format des Literaturverzeichnisses) wird entspechend den Vorgaben der Studiengänge automatisch ausgewählt. Es wird dringend empfohlen, \BibTeX zu verwenden (also nicht die Literaturquellen wie in diesem Beispiel manuell im Dokument einzugeben. 
+
+\chapter{Zweite Überschrift Tiefe 0 (chapter)}
+\blindtext 
+
+\noindent Querverweise werden in \LaTeX{} automatisch erzeugt und verwaltet, damit sie leicht aktualisiert werden können. Hier wird zum Beispiel auf Abbildung \ref{Abb1} verwiesen.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=0.5\linewidth]{PICs/Buchruecken}
+\caption{Beispiel für die Beschriftung eines Buchrückens.}\label{Abb2}
+\end{figure}
+
+Und hier ist ein Verweis auf Tabelle \ref{tab1}. Das gezeigte Tabellenformat ist nur ein Beispiel. Tabellen können individuell gestaltet werden.
+
+\begin{table}[!htbp]
+\centering
+\begin{tabular}{| p{0.3\linewidth} | p{0.3\linewidth} | p{0.3\linewidth} |}\hline
+Datum & Thema & Raum\\\hline
+20.08.2008 & Graphentheorie	& HS 3.13\\
+01.10.2008 & Biomathematik & HS 1.05\\\hline
+\end{tabular}
+\caption{Semesterplan der Lehrveranstaltung \glqq Angewandte Mathematik\grqq.}\label{tab2}
+\end{table}
+
+Hier wird auf die Formel \ref{Gl1} verwiesen.
+
+\begin{align}
+x = -\frac{p}{2}\pm\sqrt{\frac{p^2}{4}-q}\label{Gl2}
+\end{align}
+
+Literaturverweise sollten automatisch verwaltet werden, vor allem dann, wenn es viele Quellenverweise gibt. Hier wird auf \cite{Balzert:2005} und \cite{Wagner:2007,Aloyetal:1995} verwiesen. Das verwendete Zitierformat (bzw. das Format des Literaturverzeichnisses) wird entspechend den Vorgaben der Studiengänge automatisch ausgewählt. Es wird dringend empfohlen, \BibTeX zu verwenden (also nicht die Literaturquellen wie in diesem Beispiel manuell im Dokument einzugeben. 
+
+\clearpage
+\bibliographystyle{plain}
+\begin{thebibliography}{99}
+\bibitem{Balzert:2005}
+H.~Balzert \newblock{\em{Lehrbuch der Objektmodellierung - Analyse und Entwurf mit der UML 2}},  2. Ausg., Elsevier GmbH, München 2005.
+
+\bibitem{Wagner:2007}
+K.W.~Wagner \newblock{\em{Performance Excellence. Der Praxisleitfaden zum effektiven Prozessmanagement}}, Hanser Fachbuch, München 2007.
+
+\bibitem{Aloyetal:1995}
+A.~Aloy, E.~Schragl, H.~Neth, A.~Donner, und A.~Kluwick \newblock{\em{Strömungsverhalten des Atemgases bei SHFJ Jet-Laryngoskop}}
+\newblock {\textsc {Der Anästhesist}}, 44:558--565, 1995.
+\end{thebibliography}
+\clearpage
+
+% Das Abbildungsverzeichnis
+\listoffigures
+\clearpage
+
+% Das Tabellenverzeichnis
+\listoftables
+\clearpage
+
+\phantomsection
+\addcontentsline{toc}{chapter}{Abkürzungsverzeichnis}
+\chapter*{Abkürzungsverzeichnis}
+\begin{acronym}[XXXXX]
+	\acro{ABC}[ABC]{Alphabet}
+	\acro{WWW}[WWW]{world wide web}
+	\acro{ROFL}[ROFL]{Rolling on floor laughing}
+\end{acronym}
+\end{document}

@@ -1,0 +1,18 @@
+# SPDX-FileCopyrightText: : 2021
+# Prerequisites: Conda-ENV, packages pyyaml / subprocess / sys
+
+# PACKAGE-INSTALLATIONS: False, if conda environment is active and packages are installed, if True: missing packages are installed at the beginning
+install_packages: False 
+
+network:
+ filename: 'elec_s_10_ec_fluccoplus_Co2L-1H.nc'
+ year: '2030' #reference year
+ scenario: "Veigl"
+
+evaluation: #evaluation of the residual load in network concentrating on time statistics.
+ residual_load_ordered: falsef
+ zero_crossings: trfalseue # residual load changing from begative to positive
+ duration_line: false # annual duration line
+ duration_statistics: false # statistics concerning duration of one phase positive residual load
+ load_shifting_simulation: true # easy algorithm simulating load shifting
+ signals: false # signals for load-shifting potentials having residual load as basis
