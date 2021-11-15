@@ -432,31 +432,51 @@ def plot_Nulldurchgang(counts, index, zeitraum):
 #                   bbox_inches = 'tight') #falscher Plot, der hier gespeichert wird! 
 #    plt.close()
 ## Jahresdauerlinie #############################################################################
+
+    
+
 def Jahresdauerlinie(frame, art):
-    for i in range(0, res.size):
-        if frame.iloc[i]['AT0 0'] < 0:
-            art = 'Residuallast'
     sort = frame.sort_values(by = 'AT0 0',
                              ascending = False,
                              ignore_index = True)
-    sort.plot.area(stacked = False, 
-                   figsize = (20,5),
-              ylabel = 'Leistung [MW]',
-              xlabel = 'Zeit [h]',
-              color = 'darkblue')
-    plt.axhline(y = 0, c = 'blue')
+    sorted_lists = [sort]
+    name_list = [art]
+    print('fertig sortiert')
+    for i in range(0, sort.index.size): # wenn werte negativ werden, dann sort dort teilen
+        #print('check number ', i)
+        if sort['AT0 0'].iloc[i] < 0:
+            sort_pos = sort[0:i]
+            sort_neg = sort[i:sort.index.size].sort_values(by = 'AT0 0',
+                                                          ascending = True,
+                                                          ignore_index = True)
+            sorted_lists=[sort_pos, sort_neg]
+            name_list = ['Positive_RES', 'Negative_RES']
+            #return(sorted_lists)
+            break
+    print('Beginn graphing')
+    fig,ax = plt.subplots(figsize=(20,5))
+    for v in sorted_lists:
+        v.plot(kind = 'area', stacked = False,
+                    ylabel = 'Leistung [MW]',
+                    xlabel = 'Zeit [h]',
+                    ax=ax)
+        plt.legend(name_list)
     plt.title('Jahresdauerlinie der ' + art, fontsize = 23)
+    plt.axhline(y = 0, c = 'blue')
+    ax.set_ylim([-sorted_lists[0]['AT0 0'].max()*1.05,sorted_lists[0]['AT0 0'].max()*1.05])
     plt.savefig(ordner + '/Plots/Jahresdauerlinie/' + 'JDL der ' + art + '.png',
                    format = 'png',
                    bbox_inches = 'tight')
     plt.close()
-    sort.to_csv(ordner + 'JDL - ' + art + '.csv')
-    with pd.ExcelWriter(excel_path, mode = 'a') as writer:
-        frame.to_excel(writer, 
-                       sheet_name = 'JDL - ' + art,  
+    for v,i in zip(sorted_lists, name_list):
+    	v.to_csv(ordner + 'Jahresdauerlinie_'+i+'.csv')
+    	with pd.ExcelWriter(excel_path, mode = 'a') as writer:
+        	v.to_excel(writer,
+        		sheet_name = 'JDL - ' + i,  
                        header = ['Leistung [MW]'])
-    # aufrufbar für res, pres und renload (bei renload auch load übergeben!)
-    
+# aufrufbar für res, pres und renload
+
+  
 ## Zeitdauern ####################################################################################
 def ZR_RES(res):
     dauer = np.zeros(300)

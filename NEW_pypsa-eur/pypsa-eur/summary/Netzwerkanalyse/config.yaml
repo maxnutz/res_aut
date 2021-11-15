@@ -10,9 +10,9 @@ network:
  scenario: "Veigl"
 
 evaluation: #evaluation of the residual load in network concentrating on time statistics.
- residual_load_ordered: true
- zero_crossings: true # residual load changing from begative to positive
+ residual_load_ordered: false
+ zero_crossings: false # residual load changing from begative to positive
  duration_line: true # annual duration line
- duration_statistics: true # statistics concerning duration of one phase positive residual load
- load_shifting_simulation: true # easy algorithm simulating load shifting
+ duration_statistics: fasle # statistics concerning duration of one phase positive residual load
+ load_shifting_simulation: flase # easy algorithm simulating load shifting
  signals: true # signals for load-shifting potentials having residual load as basis
