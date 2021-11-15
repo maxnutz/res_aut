@@ -44,6 +44,8 @@ import pandas as pd
 import numpy as np
 import dateutil
 from pandas import Timedelta as Delta
+from FLUCCOplus.notebooks import *
+import FLUCCOplus.transform as tf
 
 
 def load_timeseries(fn, years, countries, powerstatistics=True):
@@ -188,6 +190,16 @@ def manual_adjustment(load, powerstatistics):
 
     return load
 
+def variing_adjustments(load):
+    hscale = 24
+    p_day = np.array([1.1,1.1,1.1,1.1,0.95,0.95,1,1,0.95,0.95,1,1.1]) # daily changes
+    p_year = np.array([0.95, 0.95, 1, 1.1, 1, 1]) # seasonal changes
+    day = tf.transform(p_day, hour_scale = hscale)
+    year = tf.transform(p_year, hour_scale = hscale)
+    adjustdf = pd.DataFrame(data = day*year, index = load.index) ### geht das mit load.index??
+    load = pd.DataFrame(data = load.values * adjustdf.values, index = load.index)
+    return load
+
 
 if __name__ == "__main__":
 
@@ -222,6 +234,7 @@ if __name__ == "__main__":
         'Load data contains nans. Adjust the parameters '
         '`time_shift_for_large_gaps` or modify the `manual_adjustment` function '
         'for implementing the needed load data modifications.')
+    #load = variing_adjustments(load)
 
     load.to_csv(snakemake.output[0])
 
