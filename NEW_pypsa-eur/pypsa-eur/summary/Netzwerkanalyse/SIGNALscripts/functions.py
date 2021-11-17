@@ -6,7 +6,7 @@ name = "functions"
 def import_func(dateien, names):
     signals = []
     for d in dateien: 
-        s = pd.read_csv(d, header = 1, names = ['snapshots', 'signal'])
+        s = pd.read_csv('result_files/' + d, header = 1, names = ['snapshots', 'signal'])
         signals.append(s)
     return [names, signals]
 
