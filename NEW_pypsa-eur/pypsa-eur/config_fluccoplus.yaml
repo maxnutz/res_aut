@@ -29,7 +29,7 @@ snapshots:
   closed: 'left' # end is not inclusive
 
 enable:
-  prepare_links_p_nom: true
+  prepare_links_p_nom: false
   retrieve_databundle: false
   build_cutout: false
   retrieve_cutout: true
