@@ -383,6 +383,9 @@ def attach_hydro(n, costs, ppl):
                p_max_pu=(inflow_t[ror.index]
                          .divide(ror['p_nom'], axis=1)
                          .where(lambda df: df<=1., other=1.)))
+    #n.generators.p_nom.loc[n.generators.index == 'AT0 0 ror'] = 5000
+    #print('Generators P_nom ###############\n',n.generators.p_nom)
+    #print('Generator.loc ############\n',n.generators.p_nom.loc[n.generators.index == 'AT0 0 ror'] )
 
     if 'PHS' in carriers and not phs.empty:
         # fill missing max hours to config value and

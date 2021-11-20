@@ -5,7 +5,7 @@
 install_packages: False 
 
 network:
- filename: 'elec_s_10_ec_fluccoplus_Co2L-1H.nc'
+ filename: 'elec_s_10_ec_lcopt_Co2L-1H.nc'
  year: '2030' #reference year
  scenario: "FluccoPlus"
 
@@ -16,3 +16,4 @@ evaluation: #evaluation of the residual load in network concentrating on time st
  duration_statistics: true # statistics concerning duration of one phase positive residual load
  load_shifting_simulation: true # easy algorithm simulating load shifting
  signals: true # signals for load-shifting potentials having residual load as basis
+ emissions: true #emissions of energy production in AUT in gCO2equ/kWh

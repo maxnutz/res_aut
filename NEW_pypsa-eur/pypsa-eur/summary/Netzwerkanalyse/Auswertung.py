@@ -1,11 +1,16 @@
 # installed packages: sys, subprocess
 # path structure: pypsa-ordner /summary/Netzwerkanalyse
-import yaml
+import logging
+#### logging and yaml config-file
+logging.basicConfig(filename='logging_auswertung.log',filemode = 'w',
+		level=logging.DEBUG, 
+		format='%(asctime)s %(message)s')
 import os
 ordnerGES = os.getcwd() # working directory
+import yaml
 with open(ordnerGES + '/config.yaml', 'r') as stream:
 	config = yaml.safe_load(stream)
-
+######
 def install_prerequisites(install):
     import subprocess
     import sys
@@ -36,7 +41,7 @@ def install_prerequisites(install):
 
 install = config.get('install_packages')
 if install == True:
-    print('installing packages')
+    logging.info('installing packages')
     install_prerequisites(install)
 
 
@@ -63,10 +68,12 @@ n = pypsa.Network(pypsa_file)
 
 ###############################################################################
 ## computation of Residual load: load, not checked by EE or storage
+logging.info('network loaded')
+load = n.loads_t.p.filter(like = 'AT').sum(axis=1) # store load as series
+#print('load ausgelesen\n', load, type(load))
 renewables = ['solar', 'wind', 'ror', 'biomass']
 stores = ['H2O', 'battery']#######
 store_units = ['PHS', 'hydro']########
-load = n.loads_t.p.filter(like='AT')
 renload = n.generators_t.p.filter(like = 'geothermal').filter(like = 'AT').sum(axis=1)
 for x in renewables: 
     renload += n.generators_t.p.filter(like = x).filter(like = 'AT').sum(axis=1)
@@ -75,11 +82,16 @@ for x in stores:
 for x in store_units:
     renload += n.storage_units_t.p.filter(like=x).filter(like='AT').sum(axis=1)
 renload[renload<0]=0
-renload = renload.to_frame(name = 'AT0 0')
-res = load - renload
-pres = np.maximum(res, 0)
-nres = np.minimum(res, 0)
+renload = renload # store renload as series
+#rendf['AT0 0'] = renload
+#print('renload ausgelesen\n', renload, type(renload))
+res = load - renload # res as series
+res = res.to_frame(name = 'AT0 0') # construct pd.DataFrame
+#print('res berechnet\n', res, type(res))
+#pres = np.maximum(res, 0)
+#nres = np.minimum(res, 0)
 resWort = "Last, die nicht durch Strom erzeugt mit erneuerbaren Energieträgern oder Strom aus Speichern in Österreich gedeckt wird"
+logging.info('finished calculations residual load')
 ####################################################################################
 
 ## global variables and file system ###################################################
@@ -121,14 +133,15 @@ with pd.ExcelWriter(excel_path, datetime_format = 'DD.MM.YYYY') as writer:
     df.to_excel(writer, sheet_name = 'Allgemeines')
 signaldf = pd.DataFrame(res['AT0 0'].values[:], index = res.index, columns = ['Residuallast'])
 #jedes mal, wenn dieser Code-Teil durchlaufen wird, wird ein neues Excel-File angelegt
+logging.info('finished setting up file-structure')
 ###############################################################################
 
 ## basic data ####################################################################################
 def basic_data():
     plot_series(load, 'Stromverbrauch in Österreich', 'MW')
     plot_series(renload, 'Erzeugung erneuerbarer Energie in Österreich', 'MW')
-    fourier(load, 'Last')
-    fourier(renload, 'Erzeugung erneuerbarer Energie')
+    #fourier(load, 'Last')
+    fourier(renload.to_frame(name = 'AT0 0'), 'Erzeugung erneuerbarer Energie') ## to_frame, das renload is stored as series
     autgens = n.generators_t.p.filter(like = 'AT')
     ITs=autgens.filter(like='solar').sum(axis=1).sum(axis=0)
     ITw=autgens.filter(like='wind').sum(axis=1).sum(axis=0)
@@ -218,7 +231,7 @@ def Residuallast_per_hour(jahr, res):
                         sheet_name = 'RES pro Stunde', 
                         header = ['Residuallast [MWh]'])
     plot_Residuallast(counts, 'Stunde', 'h') # Graphing
-    fourier(counts, 'Residuallast') # Frequenzanalyse
+   # fourier(counts, 'Residuallast') # Frequenzanalyse
     # ein csv mit der stündlichen Residuallast
 
 def Residuallast_per_day (jahr, silvester, pres, einjahr): 
@@ -329,18 +342,20 @@ def Residuallast_yn_per_day_per_hour(res, jahr):
                        sheet_name = 'RL nach Tageszeit_pro Monat')
     # ein csv, das die Tage enthält, die in dem Monat zu der Uhrzeit eine Residuallast entstanden ist.
 def plot_Residuallast(counts, zeitraum, einheit):
+    kind = 'line' if zeitraum == 'Stunde' else 'bar'
+    print(zeitraum, ' mit kind: ', kind)
     fig, ax = plt.subplots(figsize = (20,5))
-    counts.plot(kind = 'bar',
-                figsize = (20,5),
+    counts.plot(kind = kind,
                 ylabel = 'Energie [MWh]',
                 xlabel = 'Zeit [' + einheit +']',
                 color = 'darkblue',
                 ax = ax) #'darkblue')
-    xt = []
-    for i in range(0, 12):
-    	xt.append(i/12 * len(counts))
-    ax.set_xticks(xt)
-    ax.set_xticklabels(months, minor = False, rotation = 45)
+    if kind == 'bar':
+    	xt = []
+    	for i in range(0, 12):
+    		xt.append(i/12 * len(counts))
+    	ax.set_xticks(xt)
+    	ax.set_xticklabels(months, minor = False, rotation = 45)
     ax.legend(['RES'], loc = 1)
     plt.title("Menge an Residuallast pro " + zeitraum, fontsize = 23)
     plt.savefig(ordner + '/Plots/Residuallast/RES pro ' + zeitraum + '.png',
@@ -792,32 +807,108 @@ def plot_Schaltsignale(name, signaldf, signal):
                 format = 'png',
                 bbox_inches = 'tight')
         plt.close()
-        
+
+## Co2 emissions
+###############################################
+def plot_emissions(series, einheit, name):
+    series.plot(figsize = (20,5), label = 'Emissionen Stromerzeugung')
+    plt.title('Emissionen der Stromerzeugung in Österreich', fontsize = 23)
+    plt.ylabel("Emissionen [" + einheit +"]")
+    plt.legend()
+    if not os.path.exists(ordner + 'Plots/Emissionen/'):
+        os.mkdir(ordner + 'Plots/Emissionen/')
+    plt.savefig(ordner + 'Plots/Emissionen/emissions_' + name + '.png', 
+                format = 'png',
+                bbox_inches = 'tight')
+    plt.close()
+# runs automatically
+def plot_res_and_ems(series, res, vergleich):
+    fig,ax = plt.subplots(figsize = (20,5))
+    ax.plot(range(0, series.index.size), 
+           series.values, 
+           color = 'orange',
+           label = 'Emissionen')
+    ax2 = ax.twinx()
+    ax2.plot(range(0, series.index.size),
+            res.values,
+            color = 'blue',
+            linewidth = 0.4,
+            label = vergleich)
+    plt.legend()
+    ax.set_ylabel('Emissionen [gCO2eq/kWh]', color = 'orange')
+    ax2.set_ylabel('Energie [kWh]', color = 'blue')
+    plt.title('Emissionen der Stromerzeugung in Österreich im Vergleich mit der ' + vergleich, fontsize = 23)
+    xt = []
+    for i in range(0, 12):
+        xt.append(i/12 * series.index.size)
+    ax.set_xticks(xt)
+    ax.set_xticklabels(months, minor = False, rotation = 30)
+    if not os.path.exists(ordner + 'Plots/Emissionen/'):
+     	os.mkdir(ordner + 'Plots/Emissionen/')
+    plt.savefig(ordner + 'Plots/Emissionen/emissions - ' + vergleich + '.png', 
+            format = 'png',
+            bbox_inches = 'tight')
+    plt.close()
+ #runs automatically   
+    
+def emissions(n):
+    emissions = pd.DataFrame(index = ['CCGT', 'OCGT', 'coal', 'onwind', 'ror', 'solar'], columns = ['g/kWh'])
+    emissions['g/kWh'] = [490, 490, 820, 11, 24, 48]
+    gen_t = n.generators_t.p.filter(like = 'AT0 0')
+    e_emission = pd.DataFrame(index = n.generators_t.p.index)
+    for i in range(0, emissions.index.size):
+        e_emission[str(emissions.index[i])] = emissions['g/kWh'][i]*gen_t.filter(like = emissions.index[i])
+    series = (e_emission.sum(axis = 1)/gen_t.sum(axis = 1))
+    plot_emissions(series, 'gCO2equ/kWh', 'pro_kWh')
+    plot_emissions(e_emission.sum(axis=1), 'gCO_2equ', 'absolut')
+    plot_res_and_ems(series, renload, 'Erzeugung erneuerbarer Energie')
+    plot_res_and_ems(series, res, 'Residuallast nicht erneuerbarer Energie')
+    fourier(pd.DataFrame(data = series, columns = ['AT0 0']), 'Emissionen der Stromerzeugung')
+    series.to_csv(ordner + 'Emissions.csv')
+    with pd.ExcelWriter(excel_path, mode = 'a') as writer: 
+        series.to_excel(writer, 
+                        sheet_name = 'Emissions')
+# ein csv mit den Emissionen der Stromerzeugung in AUT in gCO2eq/kWh zu jedem der 8760 Zeitpunkte
+
+
+######    
 run = config.get('evaluation')
+if not len(run):
+	logging.warning('Could not import from config-file\nbe shure the config-file is placed in the same folder and not all evaluations set to false')
 basic_data()
+logging.info('finished basic_data, start with calculations')
 
 if run.get('residual_load_ordered') == True:
 	Residuallast_per_hour(jahr, res)
-	Residuallast_per_day(jahr, silvester, pres, einjahr)
-	Residuallast_per_month(jahr, pres)
+	Residuallast_per_day(jahr, silvester, res, einjahr) #pres
+	Residuallast_per_month(jahr, res) #pres
 	Residuallast_yn_per_day_per_hour(res, jahr)
+	logging.info('finished residual_load_ordered')
 if run.get('zero_crossings') == True:
 	Nulldurchgang_per_day(jahr, res, silvester, einjahr)
 	Nulldurchgang_per_month(jahr, res, months)
 	ND_und_RES_per_month_per_hour()
+	logging.info('finished zero_crossings')
 if run.get('duration_line') == True:
 	Jahresdauerlinie(res, 'Residuallast')
-	Jahresdauerlinie(pres, 'positiven Residuallast')
-	Jahresdauerlinie(nres.abs(), 'negativen Residuallast')
-	Jahresdauerlinie(renload, 'erzeugung erneuerbarer Energie')
+	Jahresdauerlinie(np.maximum(res, 0), 'positiven Residuallast')
+	Jahresdauerlinie(np.minimum(res, 0).abs(), 'negativen Residuallast')
+	Jahresdauerlinie(renload.to_frame(name = 'AT0 0'), 'erzeugung erneuerbarer Energie') # to_frame, as renload is stored as series
+	logging.info('finished duration_line')
 if run.get('duration_statistics') == True:
 	ZR_EE(res)
 	ZR_RES(res)
+	logging.info('finished duration_statistics')
 if run.get('load_shifting_simulation') == True:
 	Lastverschiebung_einfach(res)
+	logging.info('finished load_shifting_simulation')
 if run.get('signals') == True:
 	ressignal1(signaldf)
 	ressignal2(signaldf)
-	ressignal3(signaldf)	
+	ressignal3(signaldf)
+	logging.info('finished signals')
+if run.get('emissions') == True:
+	emissions(n)
+	logging.info('finished emissions')
 	
 

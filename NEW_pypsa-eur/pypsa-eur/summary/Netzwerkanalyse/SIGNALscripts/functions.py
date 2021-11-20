@@ -31,23 +31,24 @@ def length_stats(signal):
         if signal[v-1] > 0 and signal[v] == 0:
             pe = v
             pos_phase = np.append(pos_phase,v-pb)#von pb bis pe jetzt
-    x = {'Längstes neg. Signal [h]' : neg_phase.max(),
-         'Mean neg. Signal [h]' : round(neg_phase.mean(), 2),
-         'Längstes pos. Signal [h]' : pos_phase.max(),
-         'Mean pos. Signal [h]' : round(pos_phase.mean(), 2)}
+    x = {'Längste Sperre [h]' : neg_phase.max(),
+         'Mean  Sperre[h]' : round(neg_phase.mean(), 2),
+         'Längste Freigabe [h]' : pos_phase.max(),
+         'Mean Freigabe [h]' : round(pos_phase.mean(), 2)}
     return x
 
 def statistics(sdf):
-    stats = pd.DataFrame(columns = ['Anteil pos. Signal',
-                                    'Anteil neg. Signal',
-                                    'Längstes neg. Signal [h]',
-                                    'Mean neg. Signal [h]',
-                                    'Längstes pos. Signal [h]',
-                                    'Mean pos. Signal [h]'])
+    stats = pd.DataFrame(columns = ['Anteil Freigabe',
+                                    'Anteil Sperre',
+                                    'Längste Sperre [h]',
+                                    'Mean Sperre [h]',
+                                    'Längste Freigabe [h]',
+                                    'Mean Freigabe [h]'])
     for s in sdf[1]:
         Pp = round(s['signal'].sum()/s.index.size, 2) #positive part
         Np = round((s.index.size-s['signal'].sum())/s.index.size, 2) #negative part
-        dic = {**{'Anteil neg. Signal' : Np, 'Anteil pos. Signal' : Pp}, **length_stats(s['signal'])}
+        #dic = {**{'Anteil Sperre' : Np, 'Anteil Freigabe' : Pp}, **length_stats(s['signal'])}
+        dic = {**{'Anteil Freigabe' : Pp, 'Anteil Sperre' : Np}, **length_stats(s['signal'])}
         stats = stats.append(dic, ignore_index = True)
     stats.insert(loc=0, column = 'Name', value = sdf[0])
     return(stats)
@@ -64,7 +65,7 @@ def all_lengths(signal):
         if signal[v-1] > 0 and signal[v] == 0:
             pe = v
             pos_phase[v-pb] += 1 #von pb bis pe jetzt
-    return pd.DataFrame({'pos Signal' : pos_phase, 'neg Signal' : neg_phase})
+    return pd.DataFrame({'Freigabe' : pos_phase, 'Sperre' : neg_phase})
 
 def signal_res(sdf, resload):
     PosSNegR = 0
@@ -73,12 +74,12 @@ def signal_res(sdf, resload):
     NegSPosR = 0
     NegRes = 0
     PosRes = 0
-    stats = pd.DataFrame(columns = ['Pos. Signal RES > 0',
-                                'Pos. Signal RES < 0',
-                                'Neg. Signal RES > 0',
-                                'Neg. Signal RES < 0',
-                                'Anteil neg. Signal RES < 0',
-                                'Anteil pos. Signal RES > 0'])
+    stats = pd.DataFrame(columns = ['Freigabe RES > 0',
+                                'Freigabe RES < 0',
+                                'Sperre RES > 0',
+                                'Sperre RES < 0',
+                                'Anteil Sperre RES < 0',
+                                'Anteil Freigabe RES > 0'])
     for s in sdf[1]: 
         for i in range (0,len(s['signal'])):
             if resload['signal'][i] < 0:
@@ -93,12 +94,12 @@ def signal_res(sdf, resload):
                     PosSPosR += 1
                 else:
                     NegSPosR += 1
-        x = {'Pos. Signal RES > 0' : PosSPosR,
-            'Pos. Signal RES < 0' : PosSNegR,
-            'Neg. Signal RES > 0' : NegSPosR,
-            'Neg. Signal RES < 0' : NegSNegR,
-            'Anteil neg. Signal RES < 0' : round(NegSNegR/NegRes, 3),
-            'Anteil pos. Signal RES > 0' : round(PosSPosR/PosRes, 3)}
+        x = {'Freigabe RES > 0' : PosSPosR,
+            'Freigabe RES < 0' : PosSNegR,
+            'Sperre RES > 0' : NegSPosR,
+            'Sperre RES < 0' : NegSNegR,
+            'Anteil Sperre RES < 0' : round(NegSNegR/NegRes, 3),
+            'Anteil Freigabe RES > 0' : round(PosSPosR/PosRes, 3)}
         stats = stats.append(x, ignore_index = True)
     stats.insert(loc = 0, column = 'Name', value = sdf[0])
     return(stats)

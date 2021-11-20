@@ -1,0 +1,14 @@
+2021-11-20 10:52:27,925 Imported network elec_s_10_ec_lcopt_Co2L-1H.nc has buses, carriers, generators, global_constraints, lines, links, loads, storage_units, stores
+2021-11-20 10:52:27,928 network loaded
+2021-11-20 10:52:27,933 Note: NumExpr detected 16 cores but "NUMEXPR_MAX_THREADS" not set, so enforcing safe limit of 8.
+2021-11-20 10:52:27,933 NumExpr defaulting to 8 threads.
+2021-11-20 10:52:27,943 finished calculations residual load
+2021-11-20 10:52:28,035 finished setting up file-structure
+2021-11-20 10:52:35,984 finished basic_data, start with calculations
+2021-11-20 10:52:44,369 finished residual_load_ordered
+2021-11-20 10:53:00,493 finished zero_crossings
+2021-11-20 10:53:14,797 finished duration_line
+2021-11-20 10:53:22,562 finished duration_statistics
+2021-11-20 10:53:27,373 finished load_shifting_simulation
+2021-11-20 10:53:52,259 finished signals
+2021-11-20 10:54:10,394 finished emissions

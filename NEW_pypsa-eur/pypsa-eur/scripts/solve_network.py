@@ -268,13 +268,32 @@ def constraint_ror(n, config):
     rhs = (config['minimal_generation'].get('ror'))
     define_constraints(n, lhs, '>=', rhs, 'ror_constraint')
     print('ROR_constraints\n')
+
+def constraint_rorMAX(n, config):
+    config = n.config
+    gen_constraints = config['minimal_generation']
+    ror_var = get_var(n, 'Generator', 'p').filter(like='ror').filter(like='AT') + get_var(n, 'Generator', 'p').filter(like='hydro').filter(like='AT')
+    lhs = linexpr((1, ror_var)).sum(axis=1).sum(axis=0)
+    rhs = ((config['minimal_generation'].get('ror'))*1.02)
+    define_constraints(n, lhs, '>=', rhs, 'ror_constraint')
+    print('ROR_constraint_maximum\n')
+
+def constraint_coal(n):
+    coal_var = get_var(n, 'Generator', 'p').filter(like='coal').filter(like='AT')
+    lhs = linexpr((1, coal_var)).sum(axis=1).sum(axis=0)
+    rhs = 10
+    define_constraints(n, lhs, '<=', rhs, 'coal_constraint')
+    print('coal_constraint')
+
+
+
 ## GERMANY   
-def DE_nuclear(n, config):
+def DE_nuclear(n):
     nuclear = get_var(n, 'Generator', 'p').filter(like='nuclear').filter(like='DE')
     lhs = linexpr((1, nuclear)).sum(axis=1).sum(axis=0)
     rhs = 10
     define_constraints(n, lhs, '<=', rhs, 'DE_nuclear_constraint')
-    print('DE_nuclear_constraints\n')
+    print('DE_nuclear_constraints')
 
 def DE_solar(n, config):
     solar = get_var(n, 'Generator', 'p').filter(like='solar').filter(like='DE')
@@ -291,6 +310,7 @@ def DE_offwind(n, config):
     lhs = linexpr((1, solar)).sum(axis=1).sum(axis=0)
     rhs = 7.9e7
     define_constraints(n, lhs, '>=', rhs, 'DE_offwind_constraint')
+    print('DE_VRE_constraints')
 
 ## SCHWEIZ
 def CH_nuclear(n, config):
@@ -298,7 +318,7 @@ def CH_nuclear(n, config):
     lhs = linexpr((1, nuclear)).sum(axis=1).sum(axis=0)
     rhs = 5.3e6 #1/3 
     define_constraints(n, lhs, '<=', rhs, 'CH_nuclear_constraint')
-    print('CH_nuclear_constraints\n')
+    print('CH_nuclear_constraints')
 ## ITALY
 def IT_renewables(n, config):
     solar_var = get_var(n, 'Generator', 'p').filter(like = 'solar').filter(like='IT')
@@ -377,7 +397,8 @@ def extra_functionality(n, snapshots):
     constraint_solarMAX(n, config)
     constraint_wind(n, config)
     #constraint_ror(n, config)
-    DE_nuclear(n, config)
+    constraint_coal(n)
+    DE_nuclear(n)
     DE_solar(n, config)
     DE_onwind(n, config)
     DE_offwind(n,config)

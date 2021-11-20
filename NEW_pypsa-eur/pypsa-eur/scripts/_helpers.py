@@ -132,6 +132,8 @@ def update_p_nom_max(n):
     # Hence, we update the assumptions.
     
     n.generators.p_nom_max = n.generators[['p_nom_min', 'p_nom_max']].max(1)
+    #n.generators.p_nom.loc[n.generators.index == 'AT0 0 ror'] = 5000 ## hinzugefügt.
+    #print('###########################', n.generators.p_nom, '#######################')
 
 def aggregate_p_nom(n):
     return pd.concat([

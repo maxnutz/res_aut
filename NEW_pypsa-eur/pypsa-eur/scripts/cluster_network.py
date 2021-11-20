@@ -230,7 +230,7 @@ def busmap_for_n_clusters(n, n_clusters, solver_name, focus_weights=None, algori
     n.determine_network_topology()
 
     n_clusters = distribute_clusters(n, n_clusters, focus_weights=focus_weights, solver_name=solver_name)
-
+    #n_clusters = distribute_clusters(n, 11, focus_weights=focus_weights, solver_name=solver_name)
     def reduce_network(n, buses):
         nr = pypsa.Network()
         nr.import_components_from_dataframe(buses, "Bus")
