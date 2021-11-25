@@ -1,0 +1,34 @@
+ZUSAMMENFASSUNG NETZWERK (2021-11-24 23:04:11.612171)
+
+Scenario nach*: igw17
+Referenzjahr*: 2030
+
+Last:
+  - Referenzjahr des Verbrauchs: 2013
+  - Lineare Skalierung: 1.5
+  - zeitliche Anpassungen: False
+  - Berechnungsbasis der Residuallast: Last, die nicht durch Strom erzeugt mit erneuerbaren Energieträgern oder Strom aus Speichern in Österreich gedeckt wird
+
+Technologie nach Stromerzeugung [MWh] :
+  - Solar: 1532300.0
+  - Wind: 8256000.0
+  - Wasser: 45421613.0
+  - Nicht-erneuerbar: 516.0
+
+Installierte Kapazitäten [MW] : 
+  - Solar: 2757.0
+  - Wind: 7061.0
+  - Wasser: 13100.0
+
+Speicher:
+         nom. Power [MW]
+H2          3.275162e+06
+battery     2.004604e+04
+PHS         4.241300e+03
+hydro       6.139104e+03
+
+Geografische Grenzen:
+  - Betrachtete  Länder: ['AT', 'IT', 'SK', 'CH', 'SI', 'CZ', 'DE', 'HU']
+  - Geografische Genauigkeit: [10] Knotenpunkte für 8 Länder. Dabei wird jedes Land von mindestens einem Netzknotenpunkt repräsentiert, Italien und Deutschland sind durch je 2 Netzknotenpunkte abgebildet.
+
+Zeitliche Genauigkeit: 0 days 01:00:00 mit festem Zeitintervall.

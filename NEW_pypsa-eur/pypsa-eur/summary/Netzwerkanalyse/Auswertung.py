@@ -97,12 +97,13 @@ logging.info('finished calculations residual load')
 ## global variables and file system ###################################################
 jahr = str(res.index[1].year)  #config.get('network').get('year')
 #ordner = os.getcwd() #'/home/max/Dokumente/FH/Master_thesis/Netzmodell/pypsa-eur/summary/Netzwerkanalyse/result_files/'
+if os.path.exists(ordnerGES + '/result_files/'):
+    logging.warning('existing folders in result_files will be overwritten')
 if not os.path.exists(ordnerGES + '/result_files/'):
     os.mkdir(ordnerGES + '/result_files/')
-    print('result_files done')
 if not os.path.exists(ordnerGES + '/result_files/Plots'):
     os.mkdir(ordnerGES + '/result_files/Plots')
-    print('result_files/Plots done')
+
 files = ['Basic_Data', 'Frequenzanalyse', 'Lastverschiebung', 'Nulldurchgang', 'Residuallast', 'Zeitdauern', 'Jahresdauerlinie', 'Schaltsignale']
 ordner = ordnerGES + '/result_files/'
 for x in files:
@@ -140,7 +141,7 @@ logging.info('finished setting up file-structure')
 def basic_data():
     plot_series(load, 'Stromverbrauch in Österreich', 'MW')
     plot_series(renload, 'Erzeugung erneuerbarer Energie in Österreich', 'MW')
-    #fourier(load, 'Last')
+    fourier(load.to_frame(name = 'AT0 0'), 'Last')
     fourier(renload.to_frame(name = 'AT0 0'), 'Erzeugung erneuerbarer Energie') ## to_frame, das renload is stored as series
     autgens = n.generators_t.p.filter(like = 'AT')
     ITs=autgens.filter(like='solar').sum(axis=1).sum(axis=0)
@@ -158,11 +159,16 @@ def basic_data():
     ITc=autgens.filter(like='coal').sum(axis=1).sum(axis=0)
     techs = ['solar','wind','ROR','coal','gas','rest']
     tech_erzeugung = pd.Series([ITs, ITw, ITr, ITc, ITg, (ITn+ITb+ITgt+ITo+ITl+ITow)], index=techs, name = 'Österreich')
-    tech_cap=(n.generators[n.generators.bus.eq('AT0 0')].groupby('carrier').sum().filter(['p_nom_opt'])['p_nom_opt']+n.generators[n.generators.bus.eq('IT1 0')].groupby('carrier').sum().filter(['p_nom_opt'])['p_nom_opt'])
+    tech_cap=(n.generators[n.generators.bus.eq('AT0 0')].groupby('carrier').sum().filter(['p_nom_opt'])['p_nom_opt'])#+n.generators[n.generators.bus.eq('IT1 0')].groupby('carrier').sum().filter(['p_nom_opt'])['p_nom_opt'])
+    if ('load' in tech_cap.index):
+        tech_cap = tech_cap.drop(labels = ['load'],
+    				axis = 0,
+    				inplace = False)
     tech_erzeugung = tech_erzeugung.sort_values(kind = 'quicksort', ascending = False)
     tech_cap = tech_cap.sort_values(kind = 'quicksort', ascending = False)
     plot_techs(tech_erzeugung, 'Technologien nach Stromerzeugung pro Jahr', 'MWh')
     plot_techs(tech_cap, 'Installierte Leistung nach Technologie', 'MW')
+    plot_alltechs(n.generators_t.p.filter(like = 'AT'), 'Energieerzeugung in Österreich')
     ## zusammenfassendes txt
     with open(osp.dirname(osp.dirname(osp.dirname(osp.dirname(ordner)))) + '/config.yaml') as stream:
     	pypsaconfig = yaml.safe_load(stream)
@@ -220,6 +226,18 @@ def plot_techs(data, title, unit):
                         sheet_name = 'BD_' + title, 
                         header = [title + '[' + unit + ']'])
 
+def plot_alltechs(df, title): #needs exactly the df being prottet (with load)
+    if 'AT0 0 load' in df:
+        df = df.drop(labels = ['AT0 0 load'], axis = 1, inplace = False)
+    df.plot.area(figsize = (30,10))
+    plt.ylabel('Leistung [MW]')
+    plt.title(title, fontsize = 23)
+    plt.savefig(ordner + '/Plots/Basic_Data/' + title + '.png',
+                format = 'png',
+                bbox_inches = 'tight')
+    plt.close()
+    if title == 'Energieerzeugung in Österreich':
+    	df.to_csv(ordner + title + '.csv')
 
 ## Residual load #################################################################################
 def Residuallast_per_hour(jahr, res):
@@ -231,7 +249,7 @@ def Residuallast_per_hour(jahr, res):
                         sheet_name = 'RES pro Stunde', 
                         header = ['Residuallast [MWh]'])
     plot_Residuallast(counts, 'Stunde', 'h') # Graphing
-   # fourier(counts, 'Residuallast') # Frequenzanalyse
+    fourier(counts, 'Residuallast') # Frequenzanalyse
     # ein csv mit der stündlichen Residuallast
 
 def Residuallast_per_day (jahr, silvester, pres, einjahr): 
@@ -478,7 +496,10 @@ def Jahresdauerlinie(frame, art):
         plt.legend(name_list)
     plt.title('Jahresdauerlinie der ' + art, fontsize = 23)
     plt.axhline(y = 0, c = 'blue')
-    ax.set_ylim([-sorted_lists[0]['AT0 0'].max()*1.05,sorted_lists[0]['AT0 0'].max()*1.05])
+    v = -100.0
+    if len(name_list) > 1:
+    	v = sorted_lists[1]['AT0 0'].min()*1.05
+    ax.set_ylim([v,sorted_lists[0]['AT0 0'].max()*1.05])
     plt.savefig(ordner + '/Plots/Jahresdauerlinie/' + 'JDL der ' + art + '.png',
                    format = 'png',
                    bbox_inches = 'tight')
@@ -494,7 +515,7 @@ def Jahresdauerlinie(frame, art):
   
 ## Zeitdauern ####################################################################################
 def ZR_RES(res):
-    dauer = np.zeros(300)
+    dauer = np.zeros(3000)
     end = 0
     begin = 0
     for v in range(0, res.size):
@@ -510,7 +531,7 @@ def ZR_RES(res):
     # ein csv mit der Häufigkeit, mit der eine Zeitdauer RES vorkommt
     
 def ZR_EE(res):
-    dauer = np.zeros(300)
+    dauer = np.zeros(3000)
     end = 0
     begin = 0
     for v in range(0, res.size-1):
@@ -603,6 +624,8 @@ def Lastverschiebung_einfach(res):
                        sheet_name = 'LV - Residuallast')
     plot_Lastverschiebung('Kurzzeitige Verschiebung (innerhalb eines Zyklus)', allframe['Delta_t'], allframe['P_kurz'], allframe['Anfang'], allframe['Ende'])
     plot_Lastverschiebung('Residuallast bei Lastverschiebung innerhalb eines Zyklus', allframe['Delta_t'], allframe['P_lang'], allframe['Anfang'], allframe['Ende'])
+    plot_Anteile2(allframe['Anteil_kurz'], allframe['Anteil_lang'], allframe['Anfang'])
+
    # einfache Lastverschiebung innerhalb eines Zyklus: ein csv das alle dafür relevanten berechneten Größen enthält
 
 def plot_Lastverschiebung(beschreibung, dauer, power, start, end):
@@ -630,10 +653,37 @@ def plot_Lastverschiebung(beschreibung, dauer, power, start, end):
                    format = 'png',
                    bbox_inches = 'tight')
     plt.close()
+
+def plot_Anteile2(kurz, lang, anfang):
+    mpg = pd.DataFrame([kurz, lang, anfang], columns = ['kurz', 'lang', 'anfang'])
+    fig,ax = plt.subplots(figsize=(20,5))
+    ax.scatter(x = anfang, y = kurz, marker = 'x', label = 'Kurzfristige Lastverschiebung')
+    ax.scatter(x = anfang, y = lang, marker = 'x', label = 'langfristige Lastverschiebung')
+    plt.title('Auftreten kurzfristiger und langfristiger Lastverschiebung')  
+    plt.ylabel('Anteil')
+    plt.xlabel('Zeit [h]')
+    plt.savefig(ordner + '/Plots/Lastverschiebung/Anteile.png',
+                   format = 'png',
+                   bbox_inches = 'tight')
+    plt.close()
+    
+    fig2 = sns.jointplot(x=anfang, y=kurz, color = 'g')
+    plt.savefig(ordner + '/Plots/Lastverschiebung/Anteile_kurz.png',
+                   format = 'png',
+                   bbox_inches = 'tight')
+    plt.close()
+    fig3 = sns.jointplot(x=anfang, y=lang) 
+    plt.savefig(ordner + '/Plots/Lastverschiebung/Anteile_lang.png',
+                   format = 'png',
+                   bbox_inches = 'tight')
+    plt.close()
+
+
+
     # plots lastverschiebungssimulation => runs automatically! 
 # es gäbe noch eine zweite gute Plotfunktion zum Einbauen (anteile)
 ## Frequenzanalyse ###############################################################################
-def fourier(data, data_type):
+def fourier(data, data_type): #needs data das pd.DataFrame with 'AT0 0' as column name! 
     N = data.index.size
     T = 1/8760 #restriction
     x = np.linspace(0.0, N*T, N, endpoint = False)

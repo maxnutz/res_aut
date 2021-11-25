@@ -32,9 +32,9 @@ enable:
   prepare_links_p_nom: false
   retrieve_databundle: false
   build_cutout: false
-  retrieve_cutout: true
+  retrieve_cutout: false
   build_natura_raster: false
-  retrieve_natura_raster: true
+  retrieve_natura_raster: false
   custom_busmap: false
 
 electricity:
@@ -64,9 +64,9 @@ electricity:
   #   Solar: [solar]
   
 minimal_generation: # forces generation amount in MW/a
-  solar: 2.7e+6 #2.76e+6 #MWh (= 27 TWh) (optimisation without constraint: 1.4e+7)
-  wind: 2.3e+6 #2.38e+6 #MWh (=23 TWh) (optimisation without constraint: 1.2e+7)
-  ror: 3.3e+6 #2.30e+6 #MWh (=23 TWh) (optimisation without constraint: 1.6e+7)
+  solar: 2.763e+6 #2.76e+6 #MWh (= 27 TWh) (optimisation without constraint: 1.4e+7)
+  wind: 2.388e+6 #2.38e+6 #MWh (=23 TWh) (optimisation without constraint: 1.2e+7)
+  ror: 2.305e+6 #2.30e+6 #MWh (=23 TWh) (optimisation without constraint: 1.6e+7)
   DE_nuclear: 0. # kein Atomtrom in Deutschland
 
 atlite:

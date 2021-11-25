@@ -235,12 +235,13 @@ solving:
     threads: 4
     method: 2 # barrier
     crossover: 0
-    BarConvTol: 1.e-6 #-5
-    FeasibilityTol: 1.e-4 #-6
+    BarConvTol: 1.e-3 # maximum 1.
+    FeasibilityTol: 1.e-4 # maximum 1.e-2
     AggFill: 0
     PreDual: 0
     GURO_PAR_BARDENSETHRESH: 200
-    NumericFocus: 1 # default: 0
+    NumericFocus: 2 # default: 0
+    #Presolve: 2 #normally automatic (= -1)
   # solver:
   #   name: cplex
   #   threads: 4

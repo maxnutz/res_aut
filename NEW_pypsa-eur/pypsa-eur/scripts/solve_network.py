@@ -129,7 +129,11 @@ def prepare_network(n, solve_opts):
         nhours = solve_opts['nhours']
         n.set_snapshots(n.snapshots[:nhours])
         n.snapshot_weightings[:] = 8760. / nhours
-
+    
+    #print('changing cap of ror in AUT')
+    logger.warning('Change cap of ror in AUT to 5000')
+    n.generators.at['AT0 0 ror', 'p_nom'] = 4.523e+04 # 1.5e+8/4.e+3
+    print('cap of ror in AUT: p_nom = ', n.generators.p_nom.filter(like = 'AT')) #if not changed try
     return n
 
 
@@ -236,7 +240,7 @@ def constraint_windMAX(n, config):
     gen_constraints = config['minimal_generation']
     solar_var = get_var(n, 'Generator', 'p').filter(like='onwind').filter(like='AT')
     lhs = linexpr((1, solar_var)).sum(axis=1).sum(axis=0)
-    rhs = (config['minimal_generation'].get('wind'))*1.02
+    rhs = (config['minimal_generation'].get('wind'))*1.1
     define_constraints(n, lhs, '<=', rhs, 'wind_constraint')
     print('WIND_constraint_maximum\n')
         
@@ -256,14 +260,14 @@ def constraint_solarMAX(n, config):
     #print(gen_constraints)
     solar_var = get_var(n, 'Generator', 'p').filter(like='solar').filter(like='AT')
     lhs = linexpr((1, solar_var)).sum(axis=1).sum(axis=0)
-    rhs = (((config['minimal_generation'].get('solar'))+(config['minimal_generation'].get('solar'))*0.02))
+    rhs = (((config['minimal_generation'].get('solar'))+(config['minimal_generation'].get('solar'))*0.1))
     define_constraints(n, lhs, '<=', rhs, 'solar_constraint')
     print('SOLAR_constraint_maximum\n')
 
 def constraint_ror(n, config):
     config = n.config
     gen_constraints = config['minimal_generation']
-    ror_var = get_var(n, 'Generator', 'p').filter(like='ror').filter(like='AT') + get_var(n, 'Generator', 'p').filter(like='hydro').filter(like='AT')
+    ror_var = get_var(n, 'Generator', 'p').filter(like='ror').filter(like='AT') #+ get_var(n, 'Generator', 'p').filter(like='hydro').filter(like='AT')
     lhs = linexpr((1, ror_var)).sum(axis=1).sum(axis=0)
     rhs = (config['minimal_generation'].get('ror'))
     define_constraints(n, lhs, '>=', rhs, 'ror_constraint')
@@ -272,10 +276,10 @@ def constraint_ror(n, config):
 def constraint_rorMAX(n, config):
     config = n.config
     gen_constraints = config['minimal_generation']
-    ror_var = get_var(n, 'Generator', 'p').filter(like='ror').filter(like='AT') + get_var(n, 'Generator', 'p').filter(like='hydro').filter(like='AT')
+    ror_var = get_var(n, 'Generator', 'p').filter(like='ror').filter(like='AT') #+ get_var(n, 'Generator', 'p').filter(like='hydro').filter(like='AT')
     lhs = linexpr((1, ror_var)).sum(axis=1).sum(axis=0)
     rhs = ((config['minimal_generation'].get('ror'))*1.02)
-    define_constraints(n, lhs, '>=', rhs, 'ror_constraint')
+    define_constraints(n, lhs, '<=', rhs, 'ror_constraint')
     print('ROR_constraint_maximum\n')
 
 def constraint_coal(n):
@@ -396,11 +400,13 @@ def extra_functionality(n, snapshots):
     constraint_solar(n, config)
     constraint_solarMAX(n, config)
     constraint_wind(n, config)
-    #constraint_ror(n, config)
+    constraint_windMAX(n, config)
+    constraint_ror(n, config)
+    constraint_rorMAX(n, config)
     constraint_coal(n)
     DE_nuclear(n)
-    DE_solar(n, config)
-    DE_onwind(n, config)
+    #DE_solar(n, config)
+    #DE_onwind(n, config)
     DE_offwind(n,config)
     CH_nuclear(n, config)
     IT_renewables(n, config)

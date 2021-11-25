@@ -1,0 +1,4 @@
+Sources: 
+
+- windsmoothing: eigene Abbildung, aus dem notebook check_AT_network.ipynb (nur AUT-Daten in genauerer Auflösung
+- timeserieswindandsolar: eigene Abbildung, aus dem notebook check_AT_network.ipynb (nur AUT-Daten in genauerer Auflösung

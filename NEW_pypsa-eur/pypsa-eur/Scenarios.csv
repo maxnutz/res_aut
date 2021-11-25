@@ -1,0 +1,20 @@
+# consumption: in part of 2019: solar wind and ROR in PJ or Twh,,,,,
+# specify unit in last column (twh or pj),,,,,
+#,,,,,
+Name,consumption[per],wind,solar,ror,unit
+Veigl 17,1.23,12,12.9,43,twh
+fluccoplus,1.37,86,99.5,122,PJ
+Regierungsprogramm 2030,1.23,16.79,11.2,9.19,twh
+igw17,1.18,8256,1393,44531,gwh
+UBA17,,62.7,53.4,153.8,PJ
+UBA172050,,75.9,84.8,163.0,PJ
+Veigl 17 2050,1.38,20,32,43,twh
+#,,,,,
+# Reference Regierungsprogramm: Bundeskanzleramt 2020: Aus Verantwortung für Österreich. Regierungsprogramm 2020-2024. Wien.  S.79,,,,,
+# Jetzige Erzeugung:  Statistik Austria 2020: Vorläufige Energiebilanz für 2020,Wien.,,,,
+# Solar: 7.355 PJ = 0.2 twh,Wind 24.45 PJ = 0.6 twh,Wasser = 151 PJ = 4.19 twh,,,
+# Veigl17: Energie und Klimazukunft Österreich. Tabelle A9. S50,,,,,
+# igw17: Resch et al. (Energy Economics Group TU Wien): Stromzukunft Österreich 2030. S.28 SzenarioREF. Stromverbrauch von seite 31 Tabelle 13,,,,,
+# UBA17 und UBA172050: Szenario erneuerbare Energie 2030 und 2050. Umweltbundesamt 2017. Verbrauch: 2030: +5.2PJ 2050 -42PJ (S.18) Rest: S22.Tabelle11,,,,,
+# Berechnung Kapazität ROR: durch Volllaststunden: Vlh 2017: 5053 => Berechnung mit 5000 Volllaststunden. ,,,,,
+# Quelle Volllaststunden= Statista: https://de.statista.com/statistik/daten/studie/1065771/umfrage/volllaststunden-der-kraftwerke-in-oesterreich-nach-energietraeger/. letzer Zugriff 24.11.2021,,,,,

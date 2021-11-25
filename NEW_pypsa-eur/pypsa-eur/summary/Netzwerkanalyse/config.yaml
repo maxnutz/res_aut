@@ -5,7 +5,7 @@
 install_packages: False 
 
 network:
- filename: 'elec_s_10_ec_lcopt_Co2L-1H.nc'
+ filename: 'elec_reg20_25.11.nc'
  year: '2030' #reference year
  scenario: "FluccoPlus"
 

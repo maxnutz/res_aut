@@ -32,7 +32,7 @@ def length_stats(signal):
             pe = v
             pos_phase = np.append(pos_phase,v-pb)#von pb bis pe jetzt
     x = {'Längste Sperre [h]' : neg_phase.max(),
-         'Mean  Sperre[h]' : round(neg_phase.mean(), 2),
+         'Mean  Sperre [h]' : round(neg_phase.mean(), 2),
          'Längste Freigabe [h]' : pos_phase.max(),
          'Mean Freigabe [h]' : round(pos_phase.mean(), 2)}
     return x
@@ -56,14 +56,18 @@ def statistics(sdf):
 def all_lengths(signal):
     pb = 0
     pe = 0
-    neg_phase = np.zeros(400)
-    pos_phase = np.zeros(400)
+    neg_phase = np.zeros(600)
+    pos_phase = np.zeros(600)
     for v in range(1, signal.size):
         if signal[v-1] == 0 and signal[v] > 0:
             pb = v
+            if (v-pe) > 600: 
+            	break
             neg_phase[v-pe] += 1 # von pe bis pb jetzt
         if signal[v-1] > 0 and signal[v] == 0:
             pe = v
+            if (v-pe) > 600:
+            	break
             pos_phase[v-pb] += 1 #von pb bis pe jetzt
     return pd.DataFrame({'Freigabe' : pos_phase, 'Sperre' : neg_phase})
 

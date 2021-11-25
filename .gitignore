@@ -22,6 +22,8 @@ together.nc
 /.ipynb_checkpoints
 /token.txt
 
+/NEW_pypsa-eur/DurchlaufBuch.txt
+
 
 /NEW_pypsa-eur/pypsa-eur/cutouts
 /NEW_pypsa-eur/pypsa-eur/benchmarks
@@ -55,3 +57,5 @@ together.nc
 /NEW_pypsa-eur/pypsa-eur/summary/Netzwerkanalyse/try_outs
 /NEW_pypsa-eur/pypsa-eur/summary/Netzwerkanalyse/result_files
 /NEW_pypsa-eur/pypsa-eur/summary/Netzwerkanalyse/result_files_alles2
+/NEW_pypsa-eur/pypsa-eur/summary/Netzwerkanalyse/result_files_igw17_too_much_cap(ror)
+/NEW_pypsa-eur/pypsa-eur/summary/Netzwerkanalyse/check.py
