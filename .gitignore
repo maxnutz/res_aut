@@ -27,7 +27,7 @@ together.nc
 
 /NEW_pypsa-eur/pypsa-eur/cutouts
 /NEW_pypsa-eur/pypsa-eur/benchmarks
-/NEW_pypsa-eur/pypsa-eur/data
+/NEW_pypsa-eur/pypsa-eur/data/bundle
 /NEW_pypsa-eur/pypsa-eur/env
 /NEW_pypsa-eur/pypsa-eur/env/lib
 /NEW_pypsa-eur/pypsa-eur/logs
@@ -43,7 +43,6 @@ together.nc
 /NEW_pypsa-eur/pypsa-eur/.vscode
 /NEW_pypsa-eur/pypsa-eur/bak
 /NEW_pypsa-eur/pypsa-eur/notebooks
-/NEW_pypsa-eur/pypsa-eur/data/links_p_nom.csv
 /NEW_pypsa-eur/pypsa-eur/pypsa-git
 /NEW_pypsa-eur/pypsa-eur/pypsa-github
 /NEW_pypsa-eur/pypsa-eur/pypsa-gitattribute
