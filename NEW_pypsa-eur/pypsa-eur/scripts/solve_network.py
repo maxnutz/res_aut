@@ -131,9 +131,21 @@ def prepare_network(n, solve_opts):
         n.snapshot_weightings[:] = 8760. / nhours
     
     #print('changing cap of ror in AUT')
-    logger.warning('Change cap of ror in AUT to 5000')
-    n.generators.at['AT0 0 ror', 'p_nom'] = 4.523e+04 # 1.5e+8/4.e+3
-    print('cap of ror in AUT: p_nom = ', n.generators.p_nom.filter(like = 'AT')) #if not changed try
+    #logger.warning('Change cap of ror in AUT to 5000')
+    #n.generators.at['AT0 0 ror', 'p_nom'] = 4.523e+04 # 1.5e+8/4.e+3
+    #print('cap of ror in AUT: p_nom = ', n.generators.p_nom.filter(like = 'AT')) #if not changed try
+    return n
+
+def adapt_cap(n, config):
+    ror_cap = config['changed_installed_cap'].get('ror')
+    solar_cap = config['changed_installed_cap'].get('max_solar')
+    if not ror_cap is None:
+        logger.warning('Change cap of ror in AUT to ', ror_cap)
+        n.generators.at['AT0 0 ror', 'p_nom'] = ror_cap
+    if not solar_cap is None:
+        logger.warning('Change maximum installable capacity of solar in AUT to', solar_cap)
+        n.generators.at['AT0 0 solar', 'p_nom_max'] = solar_cap
+    print(n.generators.p_nom.filter(like = 'AT'), '\n', n.generators.p_nom_max.filter(like = 'AT'))
     return n
 
 
@@ -459,6 +471,7 @@ if __name__ == "__main__":
     with memory_logger(filename=fn, interval=30.) as mem:
         n = pypsa.Network(snakemake.input[0])
         n = prepare_network(n, solve_opts)
+        n = adapt_cap(n, config=snakemake.config) ################
         n = solve_network(n, config=snakemake.config, opts=opts,
                           solver_dir=tmpdir,
                           solver_logfile=snakemake.log.solver)

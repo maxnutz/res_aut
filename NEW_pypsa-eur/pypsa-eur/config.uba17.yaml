@@ -67,7 +67,10 @@ minimal_generation: # forces generation amount in MW/a
   solar: 5.34e+7 #2.76e+6 #MWh (= 27 TWh) (optimisation without constraint: 1.4e+7)
   wind: 6.27e+7 #2.38e+6 #MWh (=23 TWh) (optimisation without constraint: 1.2e+7)
   ror: 15.38e+7 #2.30e+6 #MWh (=23 TWh) (optimisation without constraint: 1.6e+7)
-  DE_nuclear: 0. # kein Atomtrom in Deutschland
+
+changed_installed_cap:
+  ror: 4.523e+04
+  max_solar: 6.67e+04
 
 atlite:
   nprocesses: 4

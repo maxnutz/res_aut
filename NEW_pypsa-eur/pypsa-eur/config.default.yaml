@@ -68,6 +68,10 @@ minimal_generation: # forces generation amount in MW/a
   wind: 2.3e+6 #2.38e+6 #MWh (=23 TWh) (optimisation without constraint: 1.2e+7)
   ror: 1.5e+6 #2.30e+6 #MWh (=23 TWh) (optimisation without constraint: 1.6e+7)
 
+changed_installed_cap:
+  ror:
+  max_solar:
+
 atlite:
   nprocesses: 4
   cutouts:
