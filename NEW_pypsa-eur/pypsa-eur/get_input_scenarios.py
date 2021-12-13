@@ -43,7 +43,7 @@ print(data, '\n')
 for v in data.index:
 	unit = data['unit'].loc[v]
 	if unit == 'PJ' or unit == 'pj' or unit == 'Pj':
-		exportdf = twh_to_mwh(data, exportdf, v)
+		exportdf = pj_to_mwh(data, exportdf, v)
 	elif unit == 'TWh' or unit == 'twh' or unit == 'TWH' or unit == 'Twh':
 		exportdf = twh_to_mwh(data, exportdf, v)
 	elif unit == 'MWh' or unit == 'mwh' or unit == 'MWH' or unit == 'Mwh':

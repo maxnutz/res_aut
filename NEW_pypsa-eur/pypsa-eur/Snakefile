@@ -11,7 +11,7 @@ HTTP = HTTPRemoteProvider()
 if not exists("config.yaml"):
     copyfile("config.default.yaml", "config.yaml")
 
-configfile: "config.uba17.yaml"
+configfile: "config.uba172050.yaml"
 
 COSTS="data/costs.csv"
 ATLITE_NPROCESSES = config['atlite'].get('nprocesses', 4)

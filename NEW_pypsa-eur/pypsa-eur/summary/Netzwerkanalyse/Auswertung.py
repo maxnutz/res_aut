@@ -169,6 +169,7 @@ def basic_data():
     plot_techs(tech_erzeugung, 'Technologien nach Stromerzeugung pro Jahr', 'MWh')
     plot_techs(tech_cap, 'Installierte Leistung nach Technologie', 'MW')
     plot_alltechs(n.generators_t.p.filter(like = 'AT'), 'Energieerzeugung in Österreich')
+    total_load = n.loads_t.p.filter(like = 'AT').sum(axis=1).sum(axis=0)
     ## zusammenfassendes txt
     with open(osp.dirname(osp.dirname(osp.dirname(osp.dirname(ordner)))) + '/config.yaml') as stream:
     	pypsaconfig = yaml.safe_load(stream)
@@ -176,7 +177,8 @@ def basic_data():
     Iloads = ('\n\nLast:\n  - Referenzjahr des Verbrauchs: ' + str(res.index[1].year) + 
     		'\n  - Lineare Skalierung: ' + str(pypsaconfig.get('load').get('scaling_factor')) +
     		'\n  - zeitliche Anpassungen: ' + str(pypsaconfig.get('load').get('time_adjustments')) +
-    		'\n  - Berechnungsbasis der Residuallast: ' + resWort)
+    		'\n  - Berechnungsbasis der Residuallast: ' + resWort +
+    		'\n  - Energienachfrage im Bezugsjahr: ' + str(total_load))
     Itechs = ('\n\nTechnologie nach Stromerzeugung [MWh] :' +
     		'\n  - Solar: ' + str(round(ITs,0)) +
     		'\n  - Wind: ' + str(round(ITw,0)) +
@@ -474,9 +476,7 @@ def Jahresdauerlinie(frame, art):
                              ignore_index = True)
     sorted_lists = [sort]
     name_list = [art]
-    print('fertig sortiert')
-    for i in range(0, sort.index.size): # wenn werte negativ werden, dann sort dort teilen
-        #print('check number ', i)
+    for i in range(0, sort.index.size):
         if sort['AT0 0'].iloc[i] < 0:
             sort_pos = sort[0:i]
             sort_neg = sort[i:sort.index.size].sort_values(by = 'AT0 0',
@@ -484,9 +484,7 @@ def Jahresdauerlinie(frame, art):
                                                           ignore_index = True)
             sorted_lists=[sort_pos, sort_neg]
             name_list = ['Positive_RES', 'Negative_RES']
-            #return(sorted_lists)
             break
-    print('Beginn graphing')
     fig,ax = plt.subplots(figsize=(20,5))
     for v in sorted_lists:
         v.plot(kind = 'area', stacked = False,
@@ -555,6 +553,7 @@ def build_dataframe(dauer, RES):
     		break
     	run -= 1
     frame = pd.DataFrame(dauer[1:run+1])
+    allframe = pd.DataFrame(dauer)
     frame.index = np.arange(1, len(frame)+1)
     frame.plot(kind = 'bar', figsize = (20,5),
     			ylabel = 'Anzahl',
@@ -565,7 +564,7 @@ def build_dataframe(dauer, RES):
                    format = 'png',
                    bbox_inches = 'tight')
     plt.close()
-    frame.to_csv(ordner + 'ZD - RES ' + RES + '.csv')
+    allframe.to_csv(ordner + 'ZD - RES ' + RES + '.csv')
     with pd.ExcelWriter(excel_path, mode = 'a') as writer:
         frame.to_excel(writer, 
                        sheet_name = 'ZD - RES ' + RES,  
@@ -607,8 +606,11 @@ def Lastverschiebung_einfach(res):
     	res = allframe['RES'].iloc[i]
     	ee = allframe['EE'].iloc[i]
     	t = allframe['Delta_t'].iloc[i]
-    	LVp[i] = min([res,ee], key = abs)
-    	LVl[i] = max([res, ee], key = abs) - LVp[i]
+    	LVp[i] = abs(min([res,ee], key = abs))
+    	if max([res, ee], key = abs) < 0:
+    		LVl[i] = allframe['Delta_E'].iloc[i] + LVp[i]
+    	else:
+    		LVl[i] = allframe['Delta_E'].iloc[i] - LVp[i]
     	LVp[i] = abs(LVp[i])
     	P_kurz[i] = LVp[i] / t
     	P_lang[i] = LVl[i] / t
@@ -843,9 +845,9 @@ def plot_Schaltsignale(name, signaldf, signal):
     for t in range(0, plotting.index.size):
         a = plotting['a'][t]*24
         b = plotting['b'][t]*24
-        plt.figure(figsize=(40,10))
+        plt.figure(figsize=(15,5))
         ax = plt.subplot(111)
-        plt.title('Signal ' + name + ' für ' + plotting['Zeiten'][t], fontsize=23)
+        plt.title('Signal ' + name + ' für ' + plotting['Zeiten'][t], fontsize=21)
         signaldf['Residuallast'][a:b].plot(ax = ax)
         signaldf['mean_24h'][a:b].plot(ax = ax)
         (signal[a:b]*10000).plot(alpha = 0.8, ax = ax)

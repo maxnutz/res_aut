@@ -6,7 +6,7 @@ name = "functions"
 def import_func(dateien, names):
     signals = []
     for d in dateien: 
-        s = pd.read_csv('result_files/' + d, header = 1, names = ['snapshots', 'signal'])
+        s = pd.read_csv(d, header = 1, names = ['snapshots', 'signal'])
         signals.append(s)
     return [names, signals]
 
@@ -32,7 +32,7 @@ def length_stats(signal):
             pe = v
             pos_phase = np.append(pos_phase,v-pb)#von pb bis pe jetzt
     x = {'Längste Sperre [h]' : neg_phase.max(),
-         'Mean  Sperre [h]' : round(neg_phase.mean(), 2),
+         'Mean Sperre [h]' : round(neg_phase.mean(), 2),
          'Längste Freigabe [h]' : pos_phase.max(),
          'Mean Freigabe [h]' : round(pos_phase.mean(), 2)}
     return x
