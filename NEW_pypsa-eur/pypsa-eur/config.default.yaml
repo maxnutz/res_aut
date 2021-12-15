@@ -72,6 +72,9 @@ changed_installed_cap:
   ror:
   max_solar:
 
+line_constraint: # restricts line capacities to be expanded by factor 
+  factor: 2.     # at maximum compared to todays capacities
+
 atlite:
   nprocesses: 4
   cutouts:

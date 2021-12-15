@@ -148,6 +148,12 @@ def adapt_cap(n, config):
     print(n.generators.p_nom.filter(like = 'AT'), '\n', n.generators.p_nom_max.filter(like = 'AT'))
     return n
 
+def add_line_constraints(n,config): # restricts s_nom_max to 2 * s_nom for lines from/to austria
+    a = config['line_constraint'].get('factor')
+    indices = (n.lines.loc[n.lines.bus0=='AT0 0'].index).append(n.lines.loc[n.lines.bus1=='AT0 0'].index)
+    for i in indices:
+    	n.lines.at[i, 's_nom_max'] = n.lines.at[i, 's_nom']*a
+    logger.warning('restrict maximum s_nom from/to AT to x times of installed s_nom',a)
 
 def add_CCL_constraints(n, config):
     agg_p_nom_limits = config['electricity'].get('agg_p_nom_limits')
@@ -409,6 +415,8 @@ def extra_functionality(n, snapshots):
         if "EQ" in o:
             add_EQ_constraints(n, o)
     add_battery_constraints(n)
+    add_line_constraints(n, config)
+    # supplementary constraints for production scenarios
     constraint_solar(n, config)
     constraint_solarMAX(n, config)
     constraint_wind(n, config)

@@ -1,7 +1,7 @@
 import pypsa
 import pandas as pd
 import matplotlib.pyplot as plt
-n = pypsa.Network('elec_s_10_ec_lcopt_Co2L-1H_with_stores.nc')
+n = pypsa.Network('elec_uba2050_2lines.nc')
 
 #new_generators = n.generators.replace(
 #	to_replace = n.generators.p_nom#.filter(like = 'AT0 0 ror').values,

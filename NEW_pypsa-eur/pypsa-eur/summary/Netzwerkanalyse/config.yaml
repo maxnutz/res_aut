@@ -5,15 +5,15 @@
 install_packages: False 
 
 network:
- filename: 'elec_uba17_27.11.nc'
+ filename: 'elec_uba2050_2lines.nc'
  year: '2050' #reference year
  scenario: "Umweltbundesamt 2050"
 
 evaluation: #evaluation of the residual load in network concentrating on time statistics.
- residual_load_ordered: f
- zero_crossings: f # residual load changing from begative to positive
- duration_line: f # annual duration line
- duration_statistics: f # statistics concerning duration of one phase positive residual load
- load_shifting_simulation: f # easy algorithm simulating load shifting
+ residual_load_ordered: true
+ zero_crossings: true # residual load changing from begative to positive
+ duration_line: true # annual duration line
+ duration_statistics: true # statistics concerning duration of one phase positive residual load
+ load_shifting_simulation: true # easy algorithm simulating load shifting
  signals: true # signals for load-shifting potentials having residual load as basis
- emissions: f #emissions of energy production in AUT in gCO2equ/kWh
+ emissions: true #emissions of energy production in AUT in gCO2equ/kWh
