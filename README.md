@@ -28,3 +28,6 @@ Adapted pypsa-eur Scripts:
 - prepare_network.py
 - solve_network.py
 - _helpers.py
+
+### Workflow 
+![Workflow](Dokument/Workflow/Workflow_Flussdiagramm.png)
