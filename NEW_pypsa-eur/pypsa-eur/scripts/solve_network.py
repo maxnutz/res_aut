@@ -135,7 +135,7 @@ def prepare_network(n, solve_opts):
     #n.generators.at['AT0 0 ror', 'p_nom'] = 4.523e+04 # 1.5e+8/4.e+3
     #print('cap of ror in AUT: p_nom = ', n.generators.p_nom.filter(like = 'AT')) #if not changed try
     return n
-
+#####################################################
 def adapt_cap(n, config):
     ror_cap = config['changed_installed_cap'].get('ror')
     solar_cap = config['changed_installed_cap'].get('max_solar')
@@ -154,7 +154,7 @@ def add_line_constraints(n,config): # restricts s_nom_max to 2 * s_nom for lines
     for i in indices:
     	n.lines.at[i, 's_nom_max'] = n.lines.at[i, 's_nom']*a
     logger.warning('restrict maximum s_nom from/to AT to x times of installed s_nom',a)
-
+#######################################################
 def add_CCL_constraints(n, config):
     agg_p_nom_limits = config['electricity'].get('agg_p_nom_limits')
 
